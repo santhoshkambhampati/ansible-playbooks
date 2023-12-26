@@ -1,0 +1,29 @@
+---
+- name: Upgrade Snowflake JDBC jar
+  hosts: your_target_group
+  become: yes
+  connection: SSH
+  tasks:
+    - name: Download Snowflake JDBC jar version 3.34
+      get_url:
+        url: <Enter the path here>
+        dest: <Location path for the Jar file to be downloaded>
+        mode: '0755' #adjust the permissions according to the requirement.
+
+    - name: Backup old Snowflake JDBC jar
+      ansible.builtin.copy:
+        src: <path to existing snowflake-jdbc-3.12.0.jar>
+        dest: <path to backup snowflake-jdbc-3.12.0.jar.backup>
+        remote_src: yes
+
+    - name: Replace old jar with version 3.34
+      ansible.builtin.copy:
+        src:  <downloaded location of snowflake-jdbc-3.34>
+        dest: <path to existing snowflake-jdbc-3.34>
+        remote_src: yes
+
+    # Optional: Restart any services that depend on the JDBC driver
+    - name: Restart application service
+      ansible.builtin.service:
+        name: your_service_name
+        state: restarted
